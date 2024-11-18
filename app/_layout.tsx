@@ -20,7 +20,7 @@ import {
   useUser,
 } from "@clerk/clerk-expo";
 import { tokenCache } from "@/utils/cache";
-import { LogBox } from "react-native";
+import { LogBox, StatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
@@ -54,6 +54,11 @@ const InitialLayout = () => {
 export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
       <ClerkLoaded>
         <InitialLayout />
       </ClerkLoaded>
