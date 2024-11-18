@@ -9,9 +9,10 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useOAuth } from "@clerk/clerk-expo";
+import { useAuth, useOAuth } from "@clerk/clerk-expo";
 
 const Index = () => {
+  const { signOut } = useAuth();
   const { startOAuthFlow: facebookAuth } = useOAuth({
     strategy: "oauth_facebook",
   });
@@ -103,7 +104,7 @@ const Index = () => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => signOut()}>
             <Text style={styles.switchAccountButtonText}>
               アカウントを切り替える
             </Text>
