@@ -35,6 +35,10 @@ if (!publishableKey) {
 
 LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys"]);
 
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+  unsavedChangesWarning: false,
+});
+
 const InitialLayout = () => {
   const [fontsLoaded] = useFonts({
     DMSans_400Regular,
@@ -60,7 +64,9 @@ export default function RootLayout() {
         barStyle="dark-content"
       />
       <ClerkLoaded>
-        <InitialLayout />
+        <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+          <InitialLayout />
+        </ConvexProviderWithClerk>
       </ClerkLoaded>
     </ClerkProvider>
   );

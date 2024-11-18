@@ -1,0 +1,35 @@
+import { httpRouter } from "convex/server";
+import { httpAction } from "./_generated/server";
+import { internal } from "./_generated/api";
+
+const http = httpRouter();
+
+const handleClerkWebhook = httpAction(async (ctx, req) => {
+  const { data, type } = await req.json();
+
+  switch (type) {
+    case "user.created":
+      await ctx.runMutation(internal.users.createUser, {
+        clerkId: data.id,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.emailAddresses[0].emailAddress,
+        imageUrl: data.imageUrl,
+        username: data.username,
+        followersCount: 0,
+      });
+      break;
+    case "user.deleted":
+      break;
+    default:
+      break;
+  }
+
+  return new Response(null, { status: 200 });
+});
+
+http.route({
+  path: "/clerk-users-webhook",
+  method: "POST",
+  handler: handleClerkWebhook,
+});
