@@ -1,17 +1,17 @@
 import { Platform, PlatformColor } from "react-native";
 
 export const Colors = {
-  background: "#FDF8FF",
-  border: "#acacac",
-  itemBackground: "#f5f5f5",
+  background: "#000000",
+  border: "#2A2A2A",
+  itemBackground: "#1A1A1A",
 
   ...Platform.select({
     ios: {
       submit: PlatformColor("systemBlueColor"),
     },
     android: {
-      submit: PlatformColor("@android:color/system_primary_light"),
+      submit: PlatformColor("@android:color/system_primary_dark"),
     },
-    default: { submit: "black" },
+    default: { submit: "#ffffff" },
   }),
 };

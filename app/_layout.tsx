@@ -48,11 +48,7 @@ const InitialLayout = () => {
     }
   }, [fontsLoaded]);
 
-  return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-    </Stack>
-  );
+  return <Slot />;
 };
 
 export default function RootLayout() {
