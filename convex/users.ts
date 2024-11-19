@@ -7,6 +7,10 @@ import {
 } from "./_generated/server";
 import { v } from "convex/values";
 
+/**
+ * 全てのユーザーを取得するクエリ
+ * @returns {Promise<Array>} ユーザーの配列
+ */
 export const getAllUsers = query({
   args: {},
   handler: async (ctx) => {
@@ -14,6 +18,20 @@ export const getAllUsers = query({
   },
 });
 
+/**
+ * 新しいユーザーを作成する内部ミューテーション
+ * @param {Object} args - ユーザーの情報
+ * @param {string} args.clerkId - ClerkのユーザーID
+ * @param {string} args.email - ユーザーのメールアドレス
+ * @param {string} [args.first_name] - ユーザーの名前（オプション）
+ * @param {string} [args.last_name] - ユーザーの姓（オプション）
+ * @param {string} [args.imageUrl] - ユーザーのプロフィール画像URL（オプション）
+ * @param {string|null} args.username - ユーザーのユーザーネーム
+ * @param {string} [args.bio] - ユーザーの自己紹介（オプション）
+ * @param {string} [args.websiteUrl] - ユーザーのウェブサイトURL（オプション）
+ * @param {number} args.followersCount - フォロワーの数
+ * @returns {Promise<Id>} 作成されたユーザーのID
+ */
 export const createUser = internalMutation({
   args: {
     clerkId: v.string(),
@@ -35,6 +53,12 @@ export const createUser = internalMutation({
   },
 });
 
+/**
+ * Clerk IDでユーザーを取得するクエリ
+ * @param {Object} args - クエリの引数
+ * @param {string} [args.clerkId] - ClerkのユーザーID（オプション）
+ * @returns {Promise<Object|null>} ユーザーオブジェクトまたはnull
+ */
 export const getUserByClerkId = query({
   args: {
     clerkId: v.optional(v.string()),
@@ -58,6 +82,12 @@ export const getUserByClerkId = query({
   },
 });
 
+/**
+ * ユーザーIDでユーザーを取得するクエリ
+ * @param {Object} args - クエリの引数
+ * @param {Id} args.userId - ユーザーのID
+ * @returns {Promise<Object|null>} ユーザーオブジェクトまたはnull
+ */
 export const getUserById = query({
   args: {
     userId: v.id("users"),
@@ -78,6 +108,16 @@ export const getUserById = query({
   },
 });
 
+/**
+ * ユーザー情報を更新するミューテーション
+ * @param {Object} args - 更新するユーザーの情報
+ * @param {Id} args._id - 更新するユーザーのID
+ * @param {string} [args.bio] - ユーザーの自己紹介（オプション）
+ * @param {string} [args.websiteUrl] - ユーザーのウェブサイトURL（オプション）
+ * @param {string} [args.profilePicture] - ユーザーのプロフィール画像（オプション）
+ * @param {string} [args.pushToken] - ユーザーのプッシュ通知トークン（オプション）
+ * @returns {Promise<void>}
+ */
 export const updateUser = mutation({
   args: {
     _id: v.id("users"),
@@ -94,6 +134,10 @@ export const updateUser = mutation({
   },
 });
 
+/**
+ * 画像アップロード用のURLを生成するミューテーション
+ * @returns {Promise<string>} アップロード用のURL
+ */
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
@@ -102,6 +146,13 @@ export const generateUploadUrl = mutation({
   },
 });
 
+/**
+ * ユーザーのプロフィール画像を更新するミューテーション
+ * @param {Object} args - 更新する情報
+ * @param {Id} args.storageId - ストレージのID
+ * @param {Id} args._id - 更新するユーザーのID
+ * @returns {Promise<void>}
+ */
 export const updateImage = mutation({
   args: { storageId: v.id("_storage"), _id: v.id("users") },
   handler: async (ctx, args) => {
@@ -116,6 +167,7 @@ export const updateImage = mutation({
 
 /**
  * 現在のユーザーを取得するクエリ
+ * @returns {Promise<Object|null>} 現在のユーザーオブジェクトまたはnull
  */
 export const current = query({
   args: {},
@@ -126,6 +178,9 @@ export const current = query({
 
 /**
  * Clerkからユーザーを削除する内部ミューテーション
+ * @param {Object} args - 削除するユーザーの情報
+ * @param {string} args.clerkUserId - ClerkのユーザーID
+ * @returns {Promise<void>}
  */
 export const deleteFromClerk = internalMutation({
   args: { clerkUserId: v.string() },
@@ -144,8 +199,8 @@ export const deleteFromClerk = internalMutation({
 
 /**
  * 現在のユーザーを取得し、存在しない場合はエラーをスローする
- * @param ctx クエリコンテキスト
- * @returns ユーザーレコード
+ * @param {QueryCtx} ctx - クエリコンテキスト
+ * @returns {Promise<Object>} ユーザーレコード
  * @throws ユーザーが見つからない場合のエラー
  */
 export async function getCurrentUserOrThrow(ctx: QueryCtx) {
@@ -160,8 +215,8 @@ export async function getCurrentUserOrThrow(ctx: QueryCtx) {
 
 /**
  * 現在のユーザーを取得する
- * @param ctx クエリコンテキスト
- * @returns ユーザーレコード、または存在しない場合はnull
+ * @param {QueryCtx} ctx - クエリコンテキスト
+ * @returns {Promise<Object|null>} ユーザーレコード、または存在しない場合はnull
  */
 export async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
@@ -175,9 +230,9 @@ export async function getCurrentUser(ctx: QueryCtx) {
 
 /**
  * 外部IDでユーザーを検索する
- * @param ctx クエリコンテキスト
- * @param externalId 外部ID（ClerkのユーザーID）
- * @returns ユーザーレコード、または存在しない場合はnull
+ * @param {QueryCtx} ctx - クエリコンテキスト
+ * @param {string} externalId - 外部ID（ClerkのユーザーID）
+ * @returns {Promise<Object|null>} ユーザーレコード、または存在しない場合はnull
  */
 async function userByExternalId(ctx: QueryCtx, externalId: string) {
   return await ctx.db
