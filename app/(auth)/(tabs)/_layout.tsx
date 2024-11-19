@@ -8,7 +8,7 @@ import { Colors } from "@/constants/Colors";
 
 import * as Haptics from "expo-haptics";
 
-const CREATE_MODAL_ROUTE: any = "(modal)/create";
+const CREATE_MODAL_PATH: any = "(modal)/create";
 
 const CreateTabIcon = ({ color, size }: { color: string; size: number }) => (
   <View style={styles.createIconContainer}>
@@ -26,7 +26,17 @@ const Layout = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "white",
         tabBarStyle: {
-          backgroundColor: Colors.background,
+          backgroundColor: Colors.itemBackground,
+          borderTopWidth: 0,
+          height: 80,
+        },
+        tabBarItemStyle: {
+          margin: 20,
+          padding: 0,
+        },
+        tabBarIconStyle: {
+          width: 30,
+          height: 30,
         },
       }}
     >
@@ -37,7 +47,7 @@ const Layout = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
-              size={size}
+              size={32}
               color={color}
             />
           ),
@@ -56,7 +66,7 @@ const Layout = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "search" : "search-outline"}
-              size={size}
+              size={32}
               color={color}
             />
           ),
@@ -75,7 +85,7 @@ const Layout = () => {
           tabPress: (e) => {
             e.preventDefault();
             Haptics.selectionAsync();
-            router.push(CREATE_MODAL_ROUTE);
+            router.push(CREATE_MODAL_PATH);
           },
         }}
       />
@@ -86,7 +96,7 @@ const Layout = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "heart" : "heart-outline"}
-              size={size}
+              size={32}
               color={color}
             />
           ),
@@ -100,7 +110,7 @@ const Layout = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
-              size={size}
+              size={32}
               color={color}
             />
           ),
@@ -118,7 +128,7 @@ const styles = StyleSheet.create({
     color: "blue",
   },
   createIconContainer: {
-    backgroundColor: Colors.itemBackground,
+    backgroundColor: Colors.background,
     borderRadius: 8,
     padding: 6,
     width: 36,
