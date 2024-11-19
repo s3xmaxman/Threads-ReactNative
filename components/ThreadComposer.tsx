@@ -9,6 +9,8 @@ import {
   Alert,
   InputAccessoryView,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -40,27 +42,41 @@ const ThreadComposer = ({
   );
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
 
+  /**
+   * スレッドを送信する
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async () => {
+    // メディアファイルをアップロードし、ストレージIDを取得
     const mediaStorageIds = await Promise.all(
       mediaFiles.map(async (file) => uploadMediaFile(file))
     );
 
+    // スレッドを追加
     addThread({
       threadId,
       content: threadContent,
       mediaFiles: mediaStorageIds,
     });
 
+    // 状態をリセットし、モーダルを閉じる
     setThreadContent("");
     setMediaFiles([]);
     router.dismiss();
   };
 
+  /**
+   * スレッドの内容をクリアする
+   */
   const removeThread = () => {
     setThreadContent("");
     setMediaFiles([]);
   };
 
+  /**
+   * キャンセル処理を行う
+   * ユーザーに確認を求めるアラートを表示
+   */
   const handleCancel = () => {
     setThreadContent("");
     Alert.alert("スレッドを破棄しますか？", "", [
@@ -80,6 +96,11 @@ const ThreadComposer = ({
     ]);
   };
 
+  /**
+   * 画像を選択する
+   * @param {('library'|'camera')} source - 画像のソース
+   * @returns {Promise<void>}
+   */
   const selectImage = async (source: "library" | "camera") => {
     const options: ImagePicker.ImagePickerOptions = {
       allowsEditing: true,
@@ -90,6 +111,7 @@ const ThreadComposer = ({
     let result;
 
     if (source === "camera") {
+      // カメラの権限を要求
       const permission = await ImagePicker.requestCameraPermissionsAsync();
 
       result = await ImagePicker.launchCameraAsync(options);
@@ -102,16 +124,28 @@ const ThreadComposer = ({
     }
   };
 
+  /**
+   * 選択した画像を削除する
+   * @param {number} index - 削除する画像のインデックス
+   */
   const removeImage = (index: number) => {
     setMediaFiles(mediaFiles.filter((_, i) => i !== index));
   };
 
+  /**
+   * メディアファイルをアップロードする
+   * @param {ImagePicker.ImagePickerAsset} image - アップロードする画像
+   * @returns {Promise<string>} アップロードされたファイルのストレージID
+   */
   const uploadMediaFile = async (image: ImagePicker.ImagePickerAsset) => {
+    // アップロードURLを生成
     const postUrl = await generateUploadUrl();
 
+    // 画像をBlobに変換
     const response = await fetch(image.uri);
     const blob = await response.blob();
 
+    // 画像をアップロード
     const result = await fetch(postUrl, {
       method: "POST",
       headers: {
@@ -120,6 +154,7 @@ const ThreadComposer = ({
       body: blob,
     });
 
+    // レスポンスからストレージIDを取得
     const { storageId } = await result.json();
 
     return storageId;
@@ -220,20 +255,43 @@ const ThreadComposer = ({
         </TouchableOpacity>
       </View>
 
-      <InputAccessoryView nativeID={inputAccessoryViewID}>
-        <View style={[styles.keyboardAccessory]}>
-          <Text style={[styles.keyboardAccessoryText, { color: "#fff" }]}>
-            {isReply
-              ? "誰でも返信・引用できます"
-              : "フォローしているプロフィールのみ返信・引用できます"}
-          </Text>
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={[styles.submitButtonText, { color: "#fff" }]}>
-              Post
+      {Platform.OS === "ios" ? (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <View style={[styles.keyboardAccessory]}>
+            <Text style={[styles.keyboardAccessoryText, { color: "#fff" }]}>
+              {isReply
+                ? "誰でも返信・引用できます"
+                : "フォローしているプロフィールのみ返信・引用できます"}
             </Text>
-          </TouchableOpacity>
-        </View>
-      </InputAccessoryView>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
+              <Text style={[styles.submitButtonText, { color: "#fff" }]}>
+                Post
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      ) : (
+        <KeyboardAvoidingView behavior="padding">
+          <View style={[styles.keyboardAccessory]}>
+            <Text style={[styles.keyboardAccessoryText, { color: "#fff" }]}>
+              {isReply
+                ? "誰でも返信・引用できます"
+                : "あなたがフォロー中のプロフィールは返信・引用できます"}
+            </Text>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
+              <Text style={[styles.submitButtonText, { color: "#fff" }]}>
+                投稿
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      )}
     </TouchableOpacity>
   );
 };
@@ -282,12 +340,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    paddingLeft: 64,
+    paddingLeft: 16,
     gap: 12,
   },
   keyboardAccessoryText: {
     flex: 1,
     color: Colors.border,
+    fontSize: 12,
+    textAlign: "left",
   },
   submitButton: {
     backgroundColor: "#000",
