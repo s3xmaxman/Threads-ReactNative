@@ -23,7 +23,6 @@ import { LogBox, StatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import * as Sentry from "@sentry/react-native";
 
 const FEED_PATH: any = "/(auth)/(tabs)/feed";
 const PUBLIC_PATH: any = "/(public)";
@@ -81,7 +80,7 @@ export default function RootLayout() {
       <StatusBar
         translucent
         backgroundColor="transparent"
-        barStyle="dark-content"
+        barStyle="light-content"
       />
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
