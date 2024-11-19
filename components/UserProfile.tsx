@@ -5,6 +5,8 @@ import { Colors } from "@/constants/Colors";
 import { Link } from "expo-router";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { Id } from "@/convex/_generated/dataModel";
+import ImageModal from "./ImageModal";
+import { useState } from "react";
 
 type UserProfileProps = {
   userId?: string;
@@ -16,6 +18,11 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
   });
   const { userProfile } = useUserProfile();
   const isSelf = userProfile?._id === userId;
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+
+  const handleImagePress = () => {
+    setIsImageModalVisible(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -26,7 +33,12 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
           </Text>
           <Text style={styles.email}>{profile?.email}</Text>
         </View>
-        <Image source={{ uri: profile?.imageUrl }} style={styles.image} />
+        <TouchableOpacity onPress={handleImagePress}>
+          <Image
+            source={{ uri: profile?.imageUrl as string }}
+            style={styles.image}
+          />
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.bio}>{profile?.bio || "No bio"}</Text>
@@ -58,6 +70,11 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
           </>
         )}
       </View>
+      <ImageModal
+        visible={isImageModalVisible}
+        imageUrl={profile?.imageUrl as string}
+        onClose={() => setIsImageModalVisible(false)}
+      />
     </View>
   );
 };

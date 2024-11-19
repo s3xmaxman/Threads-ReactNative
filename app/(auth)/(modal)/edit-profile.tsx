@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import * as ImagePicker from "expo-image-picker";
 
 const Page = () => {
   const { biostring, linkstring, userId, imageUrl } = useLocalSearchParams<{
@@ -23,24 +24,89 @@ const Page = () => {
 
   const [bio, setBio] = useState(biostring);
   const [link, setLink] = useState(linkstring);
-
+  const [selectedImage, setSelectedImage] =
+    useState<ImagePicker.ImagePickerAsset | null>(null);
   const router = useRouter();
-  const updateUser = useMutation(api.users.updateUser);
 
+  const updateUser = useMutation(api.users.updateUser);
+  const generateUploadUrl = useMutation(api.users.generateUploadUrl);
+  const updateImage = useMutation(api.users.updateImage);
+
+  /**
+   * プロフィールの変更を保存し、画面を閉じる
+   */
   const onDone = async () => {
+    // ユーザー情報を更新
     await updateUser({
       _id: userId as Id<"users">,
       bio,
       websiteUrl: link,
     });
 
+    // 新しいプロフィール画像が選択されている場合、アップロードする
+    if (selectedImage) {
+      await updateProfilePicture();
+    }
+
+    // 画面を閉じる
     router.dismiss();
+  };
+
+  /**
+   * プロフィール画像を更新する
+   */
+  const updateProfilePicture = async () => {
+    // アップロード用URLを生成
+    const postUrl = await generateUploadUrl();
+
+    // 選択された画像をBlobに変換
+    const response = await fetch(selectedImage!.uri);
+    const blob = await response.blob();
+
+    // 画像をアップロード
+    const result = await fetch(postUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": selectedImage!.mimeType!,
+      },
+      body: blob,
+    });
+
+    // アップロードされた画像のストレージIDを取得
+    const { storageId } = await result.json();
+
+    // ユーザーのプロフィール画像を更新
+    await updateImage({
+      _id: userId as Id<"users">,
+      storageId,
+    });
+  };
+
+  /**
+   * ギャラリーから画像を選択する
+   */
+  const selectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+    // 画像が選択された場合、stateを更新
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0]);
+    }
   };
 
   return (
     <View>
       <Stack.Screen />
-      <Image source={{ uri: imageUrl }} style={styles.image} />
+      <TouchableOpacity onPress={selectImage}>
+        {selectedImage ? (
+          <Image source={{ uri: selectedImage.uri }} style={styles.image} />
+        ) : (
+          <Image source={{ uri: imageUrl }} style={styles.image} />
+        )}
+      </TouchableOpacity>
       <View style={styles.section}>
         <Text style={styles.label}>Bio</Text>
         <TextInput

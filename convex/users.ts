@@ -1,3 +1,4 @@
+import { Id } from "./_generated/dataModel";
 import {
   internalMutation,
   mutation,
@@ -44,11 +45,16 @@ export const getUserByClerkId = query({
       .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
       .unique();
 
-    if (!user) {
-      throw new Error("User not found");
+    if (!user?.imageUrl || user.imageUrl.startsWith("http")) {
+      return user;
     }
 
-    return user;
+    const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
+
+    return {
+      ...user,
+      imageUrl: url,
+    };
   },
 });
 
@@ -58,7 +64,17 @@ export const getUserById = query({
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
-    return user;
+
+    if (!user?.imageUrl || user.imageUrl.startsWith("http")) {
+      return user;
+    }
+
+    const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
+
+    return {
+      ...user,
+      imageUrl: url,
+    };
   },
 });
 
@@ -75,6 +91,23 @@ export const updateUser = mutation({
 
     const { _id, ...rest } = args;
     return await ctx.db.patch(_id, rest);
+  },
+});
+
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    await getCurrentUserOrThrow(ctx);
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const updateImage = mutation({
+  args: { storageId: v.id("_storage"), _id: v.id("users") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args._id, {
+      imageUrl: args.storageId,
+    });
   },
 });
 
