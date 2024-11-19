@@ -23,9 +23,7 @@ import { LogBox, StatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-
-const FEED_PATH: any = "/(auth)/(tabs)/feed";
-const PUBLIC_PATH: any = "/(public)";
+import { FEED_PATH, PUBLIC_PATH } from "@/constants/Path";
 
 SplashScreen.preventAutoHideAsync();
 

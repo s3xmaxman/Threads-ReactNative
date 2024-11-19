@@ -7,8 +7,7 @@ import { useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
 
 import * as Haptics from "expo-haptics";
-
-const CREATE_MODAL_PATH: any = "(modal)/create";
+import { CREATE_MODAL_PATH } from "@/constants/Path";
 
 const CreateTabIcon = ({ color, size }: { color: string; size: number }) => (
   <View style={styles.createIconContainer}>
