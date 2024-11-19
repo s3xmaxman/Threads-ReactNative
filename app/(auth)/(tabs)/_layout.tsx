@@ -8,6 +8,8 @@ import { Colors } from "@/constants/Colors";
 
 import * as Haptics from "expo-haptics";
 
+const CREATE_MODAL_ROUTE: any = "(modal)/create";
+
 const CreateTabIcon = ({ color, size }: { color: string; size: number }) => (
   <View style={styles.createIconContainer}>
     <Ionicons name="add" size={size} color={color} />
@@ -73,7 +75,7 @@ const Layout = () => {
           tabPress: (e) => {
             e.preventDefault();
             Haptics.selectionAsync();
-            router.push("/(auth)(modal)create");
+            router.push(CREATE_MODAL_ROUTE);
           },
         }}
       />
@@ -119,5 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.itemBackground,
     borderRadius: 8,
     padding: 6,
+    width: 36,
+    height: 36,
   },
 });
