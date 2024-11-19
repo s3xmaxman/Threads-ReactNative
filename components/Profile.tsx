@@ -14,6 +14,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { UserProfile } from "./UserProfile";
+import Tabs from "./Tabs";
 
 type ProfileProps = {
   userId?: Id<"users">;
@@ -25,6 +26,8 @@ const Profile = ({ userId, showBackButton = false }: ProfileProps) => {
   const { top } = useSafeAreaInsets();
   const { signOut } = useAuth();
   const router = useRouter();
+
+  const handleTabChange = (tab: string) => {};
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
@@ -63,13 +66,12 @@ const Profile = ({ userId, showBackButton = false }: ProfileProps) => {
                 </TouchableOpacity>
               </View>
             </View>
-            {userId ? (
-              <UserProfile userId={userId} />
-            ) : (
-              <UserProfile userId={userProfile?._id} />
+            {userId && <UserProfile userId={userId} />}
+            {!userId && userProfile?._id && (
+              <UserProfile userId={userProfile._id} />
             )}
 
-            {/* <Tabs onTabChange={handleTabChange} /> */}
+            <Tabs onTabChange={handleTabChange} />
           </>
         }
       />
