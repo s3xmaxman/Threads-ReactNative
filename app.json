@@ -35,15 +35,7 @@
         }
       ],
       "expo-font",
-      "expo-secure-store",
-      [
-        "@sentry/react-native/expo",
-        {
-          "organization": "JSM",
-          "project": "threads-mobile",
-          "url": "https://sentry.io/"
-        }
-      ]
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
