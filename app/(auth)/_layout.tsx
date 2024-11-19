@@ -9,7 +9,7 @@ const Layout = () => {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: Colors.background },
+        contentStyle: { backgroundColor: Colors.itemBackground },
         headerShadowVisible: false,
       }}
     >
@@ -17,6 +17,7 @@ const Layout = () => {
       <Stack.Screen
         name="(modal)/create"
         options={{
+          headerStyle: { backgroundColor: Colors.itemBackground },
           presentation: "modal",
           title: "New thread",
           headerRight: () => (
@@ -33,11 +34,12 @@ const Layout = () => {
       <Stack.Screen
         name="(modal)/edit-profile"
         options={{
+          headerStyle: { backgroundColor: Colors.itemBackground },
           presentation: "modal",
-          title: "Edit profile",
+          title: "",
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.dismiss()}>
-              <Text>キャンセル</Text>
+              <Text style={{ color: "white" }}>キャンセル</Text>
             </TouchableOpacity>
           ),
         }}
