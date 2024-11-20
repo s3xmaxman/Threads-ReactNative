@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import React from "react";
 import { Stack, useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const Layout = () => {
   const router = useRouter();
+
   return (
     <Stack
       screenOptions={{
@@ -18,7 +19,10 @@ const Layout = () => {
         name="(modal)/create"
         options={{
           headerStyle: { backgroundColor: Colors.itemBackground },
-          presentation: "modal",
+          presentation: Platform.select({
+            ios: "modal",
+            android: "card",
+          }),
           title: "New thread",
           headerRight: () => (
             <TouchableOpacity>
@@ -35,10 +39,15 @@ const Layout = () => {
         name="(modal)/edit-profile"
         options={{
           headerStyle: { backgroundColor: Colors.itemBackground },
-          presentation: "modal",
+          presentation: Platform.select({
+            ios: "modal",
+            android: "card",
+          }),
           title: "",
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/(tabs)/profile")}
+            >
               <Text style={{ color: "white" }}>キャンセル</Text>
             </TouchableOpacity>
           ),
@@ -51,7 +60,9 @@ const Layout = () => {
           title: "",
           headerStyle: { backgroundColor: "black" },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/(tabs)/feed")}
+            >
               <Ionicons name="close" size={24} color="white" />
             </TouchableOpacity>
           ),
@@ -69,13 +80,18 @@ const Layout = () => {
       <Stack.Screen
         name="(modal)/reply/[id]"
         options={{
-          presentation: "modal",
+          presentation: Platform.select({
+            ios: "modal",
+            android: "card",
+          }),
           title: "",
           headerStyle: {
             backgroundColor: Colors.itemBackground,
           },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/(tabs)/feed")}
+            >
               <Text>Cancel</Text>
             </TouchableOpacity>
           ),
