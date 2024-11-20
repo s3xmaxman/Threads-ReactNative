@@ -24,3 +24,85 @@ export const addThread = mutation({
     });
   },
 });
+
+export const getThreads = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    let threads;
+    if (args.userId) {
+      threads = await ctx.db
+        .query("messages")
+        .filter((q) => q.eq(q.field("userId"), args.userId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    } else {
+      threads = await ctx.db
+        .query("messages")
+        .filter((q) => q.eq(q.field("threadId"), undefined))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    const threadsWithMedia = await Promise.all(
+      threads.page.map(async (thread) => {
+        const creator = await getMessageCreator(ctx, thread.userId);
+        const mediaUrls = await getMediaUrls(ctx, thread.mediaFiles);
+
+        return {
+          ...thread,
+          mediaFiles: mediaUrls,
+          creator,
+        };
+      })
+    );
+
+    return {
+      ...threads,
+      page: threadsWithMedia,
+    };
+  },
+});
+
+const getMessageCreator = async (ctx: QueryCtx, userId: Id<"users">) => {
+  const user = await ctx.db.get(userId);
+
+  if (!user?.imageUrl || user?.imageUrl.startsWith("http")) {
+    return user;
+  }
+
+  const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
+
+  return {
+    ...user,
+    imageUrl: url,
+  };
+};
+
+const getMediaUrls = async (
+  ctx: QueryCtx,
+  mediaFiles: string[] | undefined
+) => {
+  if (!mediaFiles || mediaFiles.length === 0) {
+    return [];
+  }
+
+  const urlPromises = mediaFiles.map((file) =>
+    ctx.storage.getUrl(file as Id<"_storage">)
+  );
+  const results = await Promise.allSettled(urlPromises);
+  return results
+    .filter(
+      (result): result is PromiseFulfilledResult<string> =>
+        result.status === "fulfilled"
+    )
+    .map((result) => result.value);
+};
+
+export const generateUploadUrl = mutation(async (ctx) => {
+  await getCurrentUserOrThrow(ctx);
+
+  return await ctx.storage.generateUploadUrl();
+});

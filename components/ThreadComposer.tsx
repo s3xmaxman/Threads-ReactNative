@@ -255,7 +255,7 @@ const ThreadComposer = ({
         </TouchableOpacity>
       </View>
 
-      {Platform.OS === "ios" ? (
+      {Platform.OS === "ios" && (
         <InputAccessoryView nativeID={inputAccessoryViewID}>
           <View style={[styles.keyboardAccessory]}>
             <Text style={[styles.keyboardAccessoryText, { color: "#fff" }]}>
@@ -273,7 +273,9 @@ const ThreadComposer = ({
             </TouchableOpacity>
           </View>
         </InputAccessoryView>
-      ) : (
+      )}
+
+      {Platform.OS === "android" && !isPreview && (
         <KeyboardAvoidingView behavior="padding">
           <View style={[styles.keyboardAccessory]}>
             <Text style={[styles.keyboardAccessoryText, { color: "#fff" }]}>
