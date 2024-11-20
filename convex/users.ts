@@ -162,6 +162,39 @@ export const updateImage = mutation({
   },
 });
 
+/**
+ * ユーザーを検索するクエリ
+ * @param {Object} args - クエリの引数
+ * @param {string} args.search - 検索キーワード
+ * @returns {Promise<Array>} 検索結果のユーザー配列
+ */
+export const searchUsers = query({
+  args: {
+    search: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const users = await ctx.db
+      .query("users")
+      .withSearchIndex("searchUsers", (q) => q.search("username", args.search))
+      .collect();
+
+    const usersWithImage = await Promise.all(
+      users.map(async (user) => {
+        if (!user?.imageUrl || user.imageUrl.startsWith("http")) {
+          user.imageUrl;
+          return user;
+        }
+
+        const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
+        user.imageUrl = url!;
+        return user;
+      })
+    );
+
+    return usersWithImage;
+  },
+});
+
 // IDENTITY CHECK
 // https://docs.convex.dev/auth/database-auth#mutations-for-upserting-and-deleting-users
 

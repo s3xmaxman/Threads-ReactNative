@@ -5,7 +5,7 @@ const Layout = () => {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: Colors.background },
+        contentStyle: { backgroundColor: Colors.itemBackground },
         headerShadowVisible: false,
       }}
     >
