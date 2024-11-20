@@ -16,12 +16,16 @@ const Layout = () => {
         name="[id]"
         options={{
           title: "Thread",
+          headerShown: true,
           headerShadowVisible: false,
           headerRight: () => (
             <Ionicons name="notifications-outline" size={24} color="white" />
           ),
-          headerTintColor: "black",
+          headerTintColor: "white",
           headerBackTitle: "Back",
+          headerStyle: {
+            backgroundColor: Colors.itemBackground,
+          },
         }}
       />
     </Stack>

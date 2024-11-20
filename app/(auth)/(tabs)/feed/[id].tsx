@@ -17,6 +17,7 @@ import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { Colors } from "@/constants/Colors";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import Comments from "@/components/Comments";
 
 const Page = () => {
   const { id } = useLocalSearchParams();
@@ -27,8 +28,35 @@ const Page = () => {
   const { userProfile } = useUserProfile();
   const tabBarHeight = useBottomTabBarHeight();
 
-  return <View></View>;
+  return (
+    <View style={{ flexGrow: 1, marginBottom: 0 }}>
+      <ScrollView>
+        {thread ? (
+          <Thread
+            thread={thread as Doc<"messages"> & { creator: Doc<"users"> }}
+          />
+        ) : (
+          <ActivityIndicator />
+        )}
+        <Comments threadId={id as Id<"messages">} />
+      </ScrollView>
+      <View style={styles.border} />
+      <Link href={`/(modal)/reply/${id}` as any} asChild>
+        <TouchableOpacity style={styles.replyButton}>
+          <Image
+            source={{ uri: userProfile?.imageUrl as string }}
+            style={styles.replyButtonImage}
+          />
+          <Text style={{ color: "#fff" }}>
+            {thread?.creator?.first_name}に返信...
+          </Text>
+        </TouchableOpacity>
+      </Link>
+    </View>
+  );
 };
+
+export default Page;
 
 const styles = StyleSheet.create({
   border: {

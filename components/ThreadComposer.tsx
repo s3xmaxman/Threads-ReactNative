@@ -268,7 +268,7 @@ const ThreadComposer = ({
               onPress={handleSubmit}
             >
               <Text style={[styles.submitButtonText, { color: "#fff" }]}>
-                Post
+                投稿
               </Text>
             </TouchableOpacity>
           </View>
