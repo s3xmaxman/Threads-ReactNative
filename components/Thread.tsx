@@ -1,6 +1,8 @@
 import { Colors } from "@/constants/Colors";
+import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { useMutation } from "convex/react";
 import { Link } from "expo-router";
 import {
   Text,
@@ -24,6 +26,8 @@ const Thread = ({ thread }: ThreadProps) => {
     retweetCount,
     creator,
   } = thread;
+
+  const likeThread = useMutation(api.messages.likeThread);
 
   return (
     <View style={styles.container}>
@@ -70,7 +74,10 @@ const Thread = ({ thread }: ThreadProps) => {
           </ScrollView>
         )}
         <View style={styles.actions}>
-          <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => likeThread({ messageId: thread._id })}
+          >
             <Ionicons name="heart-outline" size={24} color="white" />
             <Text style={styles.actionText}>{likeCount}</Text>
           </TouchableOpacity>

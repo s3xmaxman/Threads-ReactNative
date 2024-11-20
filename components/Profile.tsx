@@ -5,16 +5,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { Id } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { UserProfile } from "./UserProfile";
 import Tabs from "./Tabs";
+import { api } from "@/convex/_generated/api";
+import { usePaginatedQuery } from "convex/react";
+import Thread from "./Thread";
 
 type ProfileProps = {
   userId?: Id<"users">;
@@ -23,17 +26,34 @@ type ProfileProps = {
 
 const Profile = ({ userId, showBackButton = false }: ProfileProps) => {
   const { userProfile } = useUserProfile();
+  const [activeTab, setActiveTab] = useState("スレッド");
   const { top } = useSafeAreaInsets();
   const { signOut } = useAuth();
   const router = useRouter();
 
-  const handleTabChange = (tab: string) => {};
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.messages.getThreads,
+    { userId: userId || userProfile?._id },
+    { initialNumItems: 10 }
+  );
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
       <FlatList
-        data={[]}
-        renderItem={() => <View />}
+        data={results}
+        renderItem={({ item }) => (
+          <Link href={`/feed/${item._id}` as any} asChild>
+            <TouchableOpacity>
+              <Thread
+                thread={item as Doc<"messages"> & { creator: Doc<"users"> }}
+              />
+            </TouchableOpacity>
+          </Link>
+        )}
         ListEmptyComponent={
           <Text style={styles.tabContentText}>まだ何も投稿していません。</Text>
         }
