@@ -24,6 +24,7 @@ import { useRouter } from "expo-router";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { FEED_PATH, PUBLIC_PATH } from "@/constants/Path";
+import * as NavigationBar from "expo-navigation-bar";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,17 +70,18 @@ const InitialLayout = () => {
     }
   }, [isSignedIn]);
 
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync("#000000");
+    NavigationBar.setButtonStyleAsync("light");
+  }, []);
+
   return <Slot />;
 };
 
 export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content"
-      />
+      <StatusBar translucent backgroundColor="black" barStyle="light-content" />
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
           <InitialLayout />
