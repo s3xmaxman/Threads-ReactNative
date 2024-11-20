@@ -24,7 +24,6 @@ import { useRouter } from "expo-router";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { FEED_PATH, PUBLIC_PATH } from "@/constants/Path";
-import * as NavigationBar from "expo-navigation-bar";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,11 +68,6 @@ const InitialLayout = () => {
       router.replace(PUBLIC_PATH);
     }
   }, [isSignedIn]);
-
-  useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#000000");
-    NavigationBar.setButtonStyleAsync("light");
-  }, []);
 
   return <Slot />;
 };

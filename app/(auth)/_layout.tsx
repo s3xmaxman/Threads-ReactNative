@@ -38,7 +38,7 @@ const Layout = () => {
           presentation: "modal",
           title: "",
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.dismiss()}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Text style={{ color: "white" }}>キャンセル</Text>
             </TouchableOpacity>
           ),
@@ -51,7 +51,7 @@ const Layout = () => {
           title: "",
           headerStyle: { backgroundColor: "black" },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.dismiss()}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="close" size={24} color="white" />
             </TouchableOpacity>
           ),
@@ -75,7 +75,7 @@ const Layout = () => {
             backgroundColor: Colors.itemBackground,
           },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.dismiss()}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Text>Cancel</Text>
             </TouchableOpacity>
           ),

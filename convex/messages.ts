@@ -40,19 +40,19 @@ export const addThread = mutation({
         commentCount: (originalThread?.commentCount || 0) + 1,
       });
 
-      //   if (originalThread?.userId) {
-      //     const user = await ctx.db.get(originalThread?.userId);
-      //     const pushToken = user?.pushToken;
+      if (originalThread?.userId) {
+        const user = await ctx.db.get(originalThread?.userId);
+        const pushToken = user?.pushToken;
 
-      //     if (!pushToken) return;
+        if (!pushToken) return;
 
-      //     await ctx.scheduler.runAfter(500, internal.push.sendPushNotification, {
-      //       pushToken,
-      //       messageTitle: 'New comment',
-      //       messageBody: args.content,
-      //       threadId: args.threadId,
-      //     });
-      //   }
+        await ctx.scheduler.runAfter(500, internal.push.sendPushNotification, {
+          pushToken,
+          messageTitle: "New comment",
+          messageBody: args.content,
+          threadId: args.threadId,
+        });
+      }
     }
 
     return message;
