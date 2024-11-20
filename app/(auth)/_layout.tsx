@@ -19,10 +19,7 @@ const Layout = () => {
         name="(modal)/create"
         options={{
           headerStyle: { backgroundColor: Colors.itemBackground },
-          presentation: Platform.select({
-            ios: "modal",
-            android: "card",
-          }),
+          presentation: "modal",
           title: "New thread",
           headerRight: () => (
             <TouchableOpacity>
@@ -39,15 +36,10 @@ const Layout = () => {
         name="(modal)/edit-profile"
         options={{
           headerStyle: { backgroundColor: Colors.itemBackground },
-          presentation: Platform.select({
-            ios: "modal",
-            android: "card",
-          }),
+          presentation: "modal",
           title: "",
           headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.push("/(auth)/(tabs)/profile")}
-            >
+            <TouchableOpacity onPress={() => router.dismiss()}>
               <Text style={{ color: "white" }}>キャンセル</Text>
             </TouchableOpacity>
           ),
@@ -61,7 +53,13 @@ const Layout = () => {
           headerStyle: { backgroundColor: "black" },
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.push("/(auth)/(tabs)/feed")}
+              onPress={() => router.dismiss()}
+              style={{
+                position: "absolute",
+                left: 0,
+                bottom: 0,
+                paddingTop: 50,
+              }}
             >
               <Ionicons name="close" size={24} color="white" />
             </TouchableOpacity>
@@ -80,18 +78,12 @@ const Layout = () => {
       <Stack.Screen
         name="(modal)/reply/[id]"
         options={{
-          presentation: Platform.select({
-            ios: "modal",
-            android: "card",
-          }),
-          title: "",
+          presentation: "modal",
           headerStyle: {
             backgroundColor: Colors.itemBackground,
           },
           headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.push("/(auth)/(tabs)/feed")}
-            >
+            <TouchableOpacity onPress={() => router.dismiss()}>
               <Text>Cancel</Text>
             </TouchableOpacity>
           ),
