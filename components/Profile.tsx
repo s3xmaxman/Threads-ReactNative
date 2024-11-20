@@ -73,7 +73,7 @@ const Profile = ({ userId, showBackButton = false }: ProfileProps) => {
                   style={styles.backButton}
                   onPress={() => router.back()}
                 >
-                  <Ionicons name="chevron-back" size={24} color="#000" />
+                  <Ionicons name="chevron-back" size={24} color="white" />
                   <Text style={styles.backText}>Back</Text>
                 </TouchableOpacity>
               ) : (
@@ -130,5 +130,6 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 16,
+    color: "white",
   },
 });

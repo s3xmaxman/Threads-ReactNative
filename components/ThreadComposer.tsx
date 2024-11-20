@@ -104,8 +104,8 @@ const ThreadComposer = ({
   const selectImage = async (source: "library" | "camera") => {
     const options: ImagePicker.ImagePickerOptions = {
       allowsEditing: true,
-      aspect: [4, 3],
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
     };
 
     let result;
@@ -375,10 +375,11 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   mediaImage: {
-    width: 100,
-    height: 200,
+    width: 150,
+    height: 300,
     borderRadius: 6,
     marginRight: 10,
     marginTop: 10,
+    resizeMode: "contain",
   },
 });
